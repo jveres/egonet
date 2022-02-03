@@ -1,0 +1,72 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  DEV_ARGS: --unstable -A
+  PROD_ARGS: --unstable --allow-net=0.0.0.0,suggestqueries.google.com,api.telegram.org --allow-env --allow-read --no-check
+  GIT_BRANCH: master
+  PORT: 8080
+
+tasks:
+  default:
+    deps: [dev]
+  dev:
+    cmds:
+      - deno run --watch {{.DEV_ARGS}} src/egonet.ts
+  test:
+    cmds:
+      - deno test {{.DEV_ARGS}} src/egograph.test.ts
+  lint:
+    cmds:
+      - deno lint --unstable ./src
+      - deno fmt ./src 
+  build:
+    deps: [lint, test]
+    cmds:
+      - deno bundle --unstable src/egonet.ts dist/egonet.js
+      - terser --compress --mangle --output dist/egonet.min.js -- dist/egonet.js
+      - rm dist/egonet.js
+    sources:
+      - ./src/*.ts
+    generates:
+      - ./dist/egonet.js
+  prod:
+    deps: [build]
+    cmds:
+      - deno run {{.PROD_ARGS}} dist/egonet.min.js
+  compile-osx:
+    deps: [build]
+    cmds:
+      - deno compile {{.PROD_ARGS}} --target x86_64-apple-darwin --output dist/egonet-x86_64-apple-darwin dist/egonet.min.js
+  compile-linux:
+    deps: [build]
+    cmds:
+      - deno compile {{.PROD_ARGS}} --target x86_64-unknown-linux-gnu --output dist/egonet-x86_64-unknown-linux-gnu dist/egonet.min.js
+  deploy:
+    deps: [compile-linux]
+    cmds:
+      - fly deploy
+  push:
+    deps: [build]
+    cmds:
+      - git add .
+      - read commitMessage && git commit -m "$commitMessage"
+      - git push origin {{.GIT_BRANCH}}
+  docker-build:
+    deps: [compile-linux]
+    cmds:
+      - docker build --platform linux/x86_64 -t egonet .
+  docker-run:
+    deps: [docker-build]
+    cmds:
+      - docker run --platform linux/x86_64 -it --rm -p{{.PORT}}:{{.PORT}} egonet
+  docker-kill:
+    cmds:
+      - docker kill $(docker ps | grep "egonet" | awk '{ print $1 }')
+  curl-test:
+    cmds:
+      - curl -sX GET "http://localhost:{{.PORT}}/?q=apple" | jq -c
+  clean:
+    cmds:
+      - rm dist/*
