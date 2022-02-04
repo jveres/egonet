@@ -12,7 +12,7 @@ RUN ldd /egonet \
     | grep -o -e '\/\(usr\|lib\)[^ :]\+' \
     | sort -u | tee /rootfs.list
 
-#RUN cat /rootfs.list | grep -v '/egonet' | xargs strip
+RUN cat /rootfs.list | grep -v '/egonet' | xargs strip
 RUN echo /egonet >> /rootfs.list
 RUN echo 'hosts: files dns' > /etc/nsswitch.conf
 RUN echo /etc/nsswitch.conf >> /rootfs.list

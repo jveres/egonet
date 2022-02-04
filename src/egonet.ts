@@ -28,7 +28,7 @@ class WebUI {
   index() {}
 }
 
-class Api {
+class API {
   @HttpServer.Post("/")
   @HttpServer.Headers({
     headers: {
@@ -76,7 +76,7 @@ Deno.addSignalListener("SIGINT", () => {
 
 HttpServer.serve({
   abortSignal: shutdown.signal,
-  controllers: [WebUI, Api],
+  controllers: [WebUI, API],
   port: PORT,
   hostname: "0.0.0.0",
   onStarted() {
