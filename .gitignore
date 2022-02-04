@@ -1,0 +1,4 @@
+.DS_Store
+.task/*
+dist/*
+!dist/.gitkeep
