@@ -66,11 +66,14 @@ export class EgoGraph {
       { signal },
     );
     if (res.status === Status.OK) {
-      const hits = await res.json();
+      const text = new TextDecoder("iso-8859-1").decode(
+        await res.arrayBuffer(),
+      );
+      const hits = JSON.parse(text);
       const set = new Set<string>();
       for (const hit of hits[1].slice(0, maxCount)) {
-        hit.split(this.pattern).slice(1).map((t: string) => {
-          if (!new RegExp("^[0-9.]+$").test(t)) { // filters
+        hit.split(this.pattern).map((t: string) => {
+          if ((t !== term) && (!new RegExp("^[0-9.]+$").test(t))) { // filters
             set.add(t);
           }
         });
