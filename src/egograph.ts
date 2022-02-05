@@ -73,7 +73,8 @@ export class EgoGraph {
       const set = new Set<string>();
       for (const hit of hits[1].slice(0, maxCount)) {
         hit.split(this.pattern).map((t: string) => {
-          if ((t !== term) && (!new RegExp("^[0-9.]+$").test(t))) { // filters
+          t = t.replace(this.pattern.trimEnd(), ""); // transform
+          if ((t !== term) && (!new RegExp("^[0-9.]+$").test(t))) { // filter
             set.add(t);
           }
         });
