@@ -4,9 +4,9 @@
 
 // deno-lint-ignore-file no-explicit-any
 
-import { Status } from "https://deno.land/std@0.125.0/http/http_status.ts";
+import { Status } from "https://deno.land/std@0.126.0/http/http_status.ts";
 import createGraph from "https://dev.jspm.io/ngraph.graph";
-import { Retry, Timeout, Trace } from "https://deno.land/x/deco@0.9.5.6/mod.ts";
+import { Retry, Timeout, Trace } from "https://deno.land/x/deco@0.9.6/mod.ts";
 
 const FETCH_TIMEOUT_MS = 5000;
 const FETCH_MAX_ATTEMPTS = 3;

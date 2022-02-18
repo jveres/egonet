@@ -1,8 +1,4 @@
-import {
-  Cache,
-  HttpServer,
-  Try,
-} from "https://deno.land/x/deco@0.9.5.6/mod.ts";
+import { Cache, HttpServer, Try } from "https://deno.land/x/deco@0.9.6/mod.ts";
 import { EgoGraph } from "./egograph.ts";
 import { Telegram } from "./telegram.ts";
 
@@ -19,23 +15,27 @@ class WebUI {
     ],
     path: "/",
   })
-  @HttpServer.Headers({
-    headers: {
-      "cache-control": `public, max-age=${CACHE_EXPIRATION_MS / 1000}`,
+  @HttpServer.ResponseInit(() => ({
+    init: {
+      headers: {
+        "cache-control": `public, max-age=${CACHE_EXPIRATION_MS / 1000}`,
+      },
     },
-  })
+  }))
   @Cache({ ttl: CACHE_EXPIRATION_MS })
   index() {}
 }
 
 class API {
   @HttpServer.Post("/")
-  @HttpServer.Headers({
-    headers: {
-      "content-type": "application/json",
-      "cache-control": `public, max-age=${CACHE_EXPIRATION_MS / 1000}`,
+  @HttpServer.ResponseInit(() => ({
+    init: {
+      headers: {
+        "content-type": "application/json",
+        "cache-control": `public, max-age=${CACHE_EXPIRATION_MS / 1000}`,
+      },
     },
-  })
+  }))
   @Cache({ ttl: CACHE_EXPIRATION_MS })
   async graph(
     { http, urlParams }: { http: Deno.RequestEvent; urlParams: string },

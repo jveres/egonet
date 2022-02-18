@@ -6,7 +6,7 @@ import {
   assertArrayIncludes,
   assertEquals,
   assertExists,
-} from "https://deno.land/std@0.125.0/testing/asserts.ts";
+} from "https://deno.land/std@0.126.0/testing/asserts.ts";
 
 Deno.test({
   name: "EgoGraph builder, defaults",
