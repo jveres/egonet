@@ -1,23 +1,26 @@
-# fly.toml file generated for egonet on 2020-09-25T11:48:09+02:00
-
 app = "egonet"
+primary_region = "ams"
+kill_signal = "SIGINT"
+kill_timeout = "5s"
 
 [[services]]
-  internal_port = 8080
   protocol = "tcp"
+  internal_port = 8080
 
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
   [services.concurrency]
+    type = "connections"
     hard_limit = 50
     soft_limit = 25
 
-  [[services.ports]]
-    handlers = ["http"]
-    port = "80"
-
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port = "443"
-
   [[services.tcp_checks]]
-    interval = 10000
-    timeout = 2000
+    interval = "10s"
+    timeout = "2s"
+    grace_period = "1s"
+    restart_limit = 0
